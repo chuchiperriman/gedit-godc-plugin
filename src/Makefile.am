@@ -17,9 +17,9 @@ AM_CFLAGS =\
 plugin_LTLIBRARIES = libgodc.la
 
 libgodc_la_SOURCES = \
-	godc-provider-words.h	\
-	godc-provider-words.c	\
-	godc-plugin.h	\
+	godc-provider-open-docs.h	\
+	godc-provider-open-docs.c	\
+	godc-plugin.h			\
 	godc-plugin.c
 
 libgodc_la_LDFLAGS = $(PLUGIN_LIBTOOL_FLAGS) `pkg-config --libs gtksourceview-2.0` `pkg-config --libs gconf-2.0`

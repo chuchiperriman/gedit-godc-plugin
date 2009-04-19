@@ -1,4 +1,4 @@
- /* gsc-proposal-open.c
+ /*
  *
  * Copyright (C) 2008 - perriman
  *
@@ -17,52 +17,52 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "gsc-proposal-open.h"
+#include "godc-proposal-open.h"
 
-struct _GscProposalOpenPrivate
+struct _GodcProposalOpenPrivate
 {
 	GeditDocument *doc;
 	GeditWindow *window;
 };
 
-G_DEFINE_TYPE(GscProposalOpen, gsc_proposal_open, GSC_TYPE_PROPOSAL);
+G_DEFINE_TYPE(GodcProposalOpen, godc_proposal_open, GSC_TYPE_PROPOSAL);
 
-#define GSC_PROPOSAL_OPEN_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GSC_TYPE_PROPOSAL_OPEN, GscProposalOpenPrivate))
+#define GODC_PROPOSAL_OPEN_GET_PRIVATE(object)(G_TYPE_INSTANCE_GET_PRIVATE ((object), GODC_TYPE_PROPOSAL_OPEN, GodcProposalOpenPrivate))
  
 static gboolean
-gsc_proposal_open_apply(GscProposal* proposal, GtkTextView *view)
+godc_proposal_open_apply(GscProposal* proposal, GtkTextView *view)
 {
-	GscProposalOpen *self = GSC_PROPOSAL_OPEN (proposal);
+	GodcProposalOpen *self = GODC_PROPOSAL_OPEN (proposal);
 	GeditTab *tab = gedit_tab_get_from_document(self->priv->doc);
 	gedit_window_set_active_tab(self->priv->window,tab);
 	return TRUE;
 }
 
 static void
-gsc_proposal_open_class_init (GscProposalOpenClass *klass)
+godc_proposal_open_class_init (GodcProposalOpenClass *klass)
 {
 	GObjectClass* object_class = G_OBJECT_CLASS (klass);
-	g_type_class_add_private (object_class, sizeof(GscProposalOpenPrivate));
+	g_type_class_add_private (object_class, sizeof(GodcProposalOpenPrivate));
 	
 	GscProposalClass *proposal_class = GSC_PROPOSAL_CLASS (klass);
-	proposal_class->apply = gsc_proposal_open_apply;
+	proposal_class->apply = godc_proposal_open_apply;
 }
 
 static void
-gsc_proposal_open_init (GscProposalOpen *self)
+godc_proposal_open_init (GodcProposalOpen *self)
 {
-	self->priv = GSC_PROPOSAL_OPEN_GET_PRIVATE (self);
+	self->priv = GODC_PROPOSAL_OPEN_GET_PRIVATE (self);
 }
 
 GscProposal*
-gsc_proposal_open_new (GeditWindow *window,
+godc_proposal_open_new (GeditWindow *window,
 		       GeditDocument *doc,
 		       GdkPixbuf *icon)
 {
 	/* FIXME Check objects */
 	gchar *name = gedit_document_get_short_name_for_display (doc);
 	gchar *info = gedit_document_get_uri_for_display (doc);
-	GscProposalOpen *self = GSC_PROPOSAL_OPEN (g_object_new (GSC_TYPE_PROPOSAL_OPEN, 
+	GodcProposalOpen *self = GODC_PROPOSAL_OPEN (g_object_new (GODC_TYPE_PROPOSAL_OPEN, 
 								 "label", name,
 								 "info", info,
 								 "icon", icon,

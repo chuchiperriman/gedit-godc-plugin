@@ -1,5 +1,4 @@
 /*
- * gsc-proposal-open.h
  *
  * Copyright (C) 2008 - perriman
  *
@@ -18,41 +17,41 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __GSC_PROPOSAL_OPEN_H__
-#define __GSC_PROPOSAL_OPEN_H__
+#ifndef __GODC_PROPOSAL_OPEN_H__
+#define __GODC_PROPOSAL_OPEN_H__
 
 #include <glib.h>
 #include <glib-object.h>
 #include <gedit/gedit-plugin.h>
-#include <gtksourcecompletion/gsc-proposal.h>
+#include <gtksourceview/gtksourcecompletionproposal.h>
 
 G_BEGIN_DECLS
 
-typedef struct _GscProposalOpenPrivate GscProposalOpenPrivate;
-typedef struct _GscProposalOpen GscProposalOpen;
-typedef struct _GscProposalOpenClass GscProposalOpenClass;
+typedef struct _GodcProposalOpenPrivate GodcProposalOpenPrivate;
+typedef struct _GodcProposalOpen GodcProposalOpen;
+typedef struct _GodcProposalOpenClass GodcProposalOpenClass;
 
-struct _GscProposalOpen
+struct _GodcProposalOpen
 {
-	GscProposal parent;
-	GscProposalOpenPrivate *priv;
+	GObject parent;
+	GodcProposalOpenPrivate *priv;
 };
 
-struct _GscProposalOpenClass
+struct _GodcProposalOpenClass
 {
-	GscProposalClass parent_class;
+	GObjectClass parent_class;
 };
 
-#define GSC_TYPE_PROPOSAL_OPEN (gsc_proposal_open_get_type ())
-#define GSC_PROPOSAL_OPEN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GSC_TYPE_PROPOSAL_OPEN, GscProposalOpen))
-#define GSC_PROPOSAL_OPEN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GSC_TYPE_PROPOSAL_OPEN, GscProposalOpenClass))
-#define GSC_IS_PROPOSAL_OPEN(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GSC_TYPE_PROPOSAL_OPEN))
-#define GSC_IS_PROPOSAL_OPEN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GSC_TYPE_PROPOSAL_OPEN))
-#define GSC_PROPOSAL_OPEN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GSC_TYPE_PROPOSAL_OPEN, GscProposalOpenClass))
+#define GODC_TYPE_PROPOSAL_OPEN (godc_proposal_open_get_type ())
+#define GODC_PROPOSAL_OPEN(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GODC_TYPE_PROPOSAL_OPEN, GodcProposalOpen))
+#define GODC_PROPOSAL_OPEN_CLASS(klass) (G_TYPE_CHECK_CLASS_CAST ((klass), GODC_TYPE_PROPOSAL_OPEN, GodcProposalOpenClass))
+#define GODC_IS_PROPOSAL_OPEN(obj) (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GODC_TYPE_PROPOSAL_OPEN))
+#define GODC_IS_PROPOSAL_OPEN_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), GODC_TYPE_PROPOSAL_OPEN))
+#define GODC_PROPOSAL_OPEN_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj), GODC_TYPE_PROPOSAL_OPEN, GodcProposalOpenClass))
 
-GType		 gsc_proposal_open_get_type	(void) G_GNUC_CONST;
+GType		 godc_proposal_open_get_type	(void) G_GNUC_CONST;
 
-GscProposal	*gsc_proposal_open_new		(GeditWindow *window,
+GtkSourceCompletionProposal	*godc_proposal_open_new(GeditWindow *window,
 						 GeditDocument *doc,
 						 GdkPixbuf *icon);
 
