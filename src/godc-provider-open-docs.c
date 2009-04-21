@@ -17,6 +17,7 @@
  *  along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <gdk/gdkkeysyms.h>
 #include "godc-provider-open-docs.h"
 #include <gtksourceview/gtksourcecompletionitem.h>
 
@@ -174,9 +175,13 @@ godc_provider_open_docs_init (GodcProviderOpenDocs * self)
 }
 
 GodcProviderOpenDocs *
-godc_provider_open_docs_new (GeditWindow *window)
+godc_provider_open_docs_new	(GeditWindow	*window,
+				 GeditView	*view)
 {
 	GodcProviderOpenDocs *ret = g_object_new (GODC_TYPE_PROVIDER_OPEN_DOCS, NULL);
 	ret->priv->window = window;
+	
+	/*TODO Show completion when the user press <control>b*/
+	
 	return ret;
 }

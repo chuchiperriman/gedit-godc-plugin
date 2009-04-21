@@ -67,9 +67,8 @@ tab_added_cb (GeditWindow *geditwindow,
 	GeditView *view = gedit_tab_get_view (tab);
 	GtkSourceCompletion *comp = gtk_source_view_get_completion (GTK_SOURCE_VIEW (view));
 	g_debug ("Adding Open Docs provider");
-	GodcProviderOpenDocs *dw = godc_provider_open_docs_new(geditwindow);
+	GodcProviderOpenDocs *dw = godc_provider_open_docs_new(geditwindow, view);
 	gtk_source_completion_add_provider(comp,GTK_SOURCE_COMPLETION_PROVIDER(dw));
-	
 	g_object_unref(dw);
 	g_debug ("provider registered");
 }

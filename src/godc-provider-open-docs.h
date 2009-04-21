@@ -53,7 +53,8 @@ struct _GodcProviderOpenDocsClass
 
 GType		 godc_provider_open_docs_get_type	(void) G_GNUC_CONST;
 
-GodcProviderOpenDocs *godc_provider_open_docs_new	(GeditWindow *window);
+GodcProviderOpenDocs *godc_provider_open_docs_new	(GeditWindow	*window,
+							 GeditView	*view);
 
 G_END_DECLS
 
