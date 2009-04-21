@@ -27,7 +27,7 @@ static void	 godc_provider_open_docs_iface_init	(GtkSourceCompletionProviderIfac
 struct _GodcProviderOpenDocsPrivate
 {
 	GeditWindow *window;
-	GdkPixbuf *icon;
+	GdkPixbuf *provider_icon;
 	GdkPixbuf *proposal_icon;
 };
 
@@ -36,6 +36,22 @@ G_DEFINE_TYPE_WITH_CODE (GodcProviderOpenDocs,
 			 G_TYPE_OBJECT,
 			 G_IMPLEMENT_INTERFACE (GTK_TYPE_SOURCE_COMPLETION_PROVIDER,
 				 		godc_provider_open_docs_iface_init))
+
+static GdkPixbuf *
+get_icon_from_theme (const gchar *name)
+{
+        GtkIconTheme *theme;
+        gint width;
+
+        theme = gtk_icon_theme_get_default ();
+
+        gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
+        return gtk_icon_theme_load_icon (theme,
+                                         name,
+                                         width,
+                                         GTK_ICON_LOOKUP_USE_BUILTIN,
+                                         NULL);
+}
 
 static const gchar * 
 godc_provider_open_docs_get_name (GtkSourceCompletionProvider *self)
@@ -46,9 +62,19 @@ godc_provider_open_docs_get_name (GtkSourceCompletionProvider *self)
 static GdkPixbuf * 
 godc_provider_open_docs_get_icon (GtkSourceCompletionProvider *self)
 {
-	return GODC_PROVIDER_OPEN_DOCS (self)->priv->icon;
+	return GODC_PROVIDER_OPEN_DOCS (self)->priv->provider_icon;
 }
 
+static gboolean
+godc_provider_activate_proposal (GtkSourceCompletionProvider *provider,
+				 GtkSourceCompletionProposal *proposal)
+{
+	GodcProviderOpenDocs *self = GODC_PROVIDER_OPEN_DOCS (provider);
+	GeditDocument *doc = g_object_get_data (G_OBJECT (proposal), "document");
+	GeditTab *tab = gedit_tab_get_from_document(doc);
+	gedit_window_set_active_tab(self->priv->window,tab);
+	return TRUE;
+}
 
 static GList *
 godc_provider_open_docs_get_proposals (GtkSourceCompletionProvider *base)
@@ -56,7 +82,8 @@ godc_provider_open_docs_get_proposals (GtkSourceCompletionProvider *base)
 	GList *item_list = NULL;
 	GList *wins,*temp;
 	GeditDocument *doc, *current_doc;
-	//GtkSourceCompletionProposal *item;
+	gchar *name, *info;
+	GtkSourceCompletionProposal *item;
 	GodcProviderOpenDocs *self = GODC_PROVIDER_OPEN_DOCS (base);
 	wins = gedit_window_get_documents(self->priv->window);
 	current_doc = gedit_window_get_active_document(self->priv->window);
@@ -66,11 +93,15 @@ godc_provider_open_docs_get_proposals (GtkSourceCompletionProvider *base)
 		doc = GEDIT_DOCUMENT(temp->data);
 		if (doc != current_doc)
 		{
-			/*item = gtk_source_completion_proposal_open_new (self->priv->window,
-						      doc,
-						      self->priv->icon);
+			name = gedit_document_get_short_name_for_display (doc);
+			info = gedit_document_get_uri_for_display (doc);
+			item = GTK_SOURCE_COMPLETION_PROPOSAL (gtk_source_completion_item_new((gchar*)name,
+							       self->priv->proposal_icon,
+							       info));
+			g_object_set_data (G_OBJECT (item), "document", doc);
 			item_list = g_list_append(item_list,item);
-			*/
+			g_free (name);
+			g_free (info);			
 		}
 		temp = g_list_next(temp);
 	}
@@ -101,15 +132,11 @@ godc_provider_open_docs_finalize (GObject *object)
 {
 	GodcProviderOpenDocs *provider = GODC_PROVIDER_OPEN_DOCS (object);
 	
-	if (provider->priv->icon != NULL)
-	{
-		g_object_unref (provider->priv->icon);
-	}
+	if (provider->priv->provider_icon != NULL)
+		g_object_unref (provider->priv->provider_icon);
 	
 	if (provider->priv->proposal_icon != NULL)
-	{
 		g_object_unref (provider->priv->proposal_icon);
-	}
 
 	G_OBJECT_CLASS (godc_provider_open_docs_parent_class)->finalize (object);
 }
@@ -134,24 +161,16 @@ godc_provider_open_docs_iface_init (GtkSourceCompletionProviderIface *iface)
 	iface->get_proposals = godc_provider_open_docs_get_proposals;
 	iface->filter_proposal = godc_provider_open_docs_filter_proposal;
 	iface->get_interactive = godc_provider_open_docs_get_interactive;
+	iface->activate_proposal = godc_provider_activate_proposal;
 }
 
 static void 
 godc_provider_open_docs_init (GodcProviderOpenDocs * self)
 {
-	GtkIconTheme *theme;
-	gint width;
-	
 	self->priv = GODC_PROVIDER_OPEN_DOCS_GET_PRIVATE (self);
 	
-	theme = gtk_icon_theme_get_default ();
-
-	gtk_icon_size_lookup (GTK_ICON_SIZE_MENU, &width, NULL);
-	self->priv->proposal_icon = gtk_icon_theme_load_icon (theme,
-	                                                      GTK_STOCK_YES,
-	                                                      width,
-	                                                      GTK_ICON_LOOKUP_USE_BUILTIN,
-	                                                      NULL);
+	self->priv->proposal_icon = get_icon_from_theme (GTK_STOCK_FILE);
+	self->priv->provider_icon = get_icon_from_theme (GTK_STOCK_OPEN);
 }
 
 GodcProviderOpenDocs *

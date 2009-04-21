@@ -1,5 +1,5 @@
 /*
- * gwp-plugin.c - Adds (auto)completion support to gedit
+ * godc-plugin.c - Adds (auto)completion support to gedit
  *
  * Copyright (C) 2007 - chuchiperriman
  *
@@ -22,22 +22,18 @@
 #include <config.h>
 #endif
 
-#include "gwp-plugin.h"
+#include "godc-plugin.h"
 
 #include <gdk/gdk.h>
 #include <glib/gi18n-lib.h>
 #include <gedit/gedit-debug.h>
-#include <gconf/gconf-client.h>
-#include <gtksourceview/gtksourcecompletiontrigger.h>
-#include <gtksourceview/gtksourcecompletiontriggerkey.h>
-#include <gtksourceview/gtksourcecompletiontriggerwords.h>
-#include "gwp-provider-words.h"
+#include "godc-provider-open-docs.h"
 
-#define GWP_PLUGIN_GET_PRIVATE(object)	(G_TYPE_INSTANCE_GET_PRIVATE ((object), GWP_TYPE_PLUGIN, GwpPluginPrivate))
+#define GODC_PLUGIN_GET_PRIVATE(object)	(G_TYPE_INSTANCE_GET_PRIVATE ((object), GODC_TYPE_PLUGIN, GodcPluginPrivate))
 
 #define TEMP_TRIGGER_NAME "UserRequestTrigger"
 
-struct _GwpPluginPrivate
+struct _GodcPluginPrivate
 {
 	GeditWindow *gedit_window;
 	GtkWidget *window;
@@ -45,22 +41,22 @@ struct _GwpPluginPrivate
 
 typedef struct _ViewAndCompletion ViewAndCompletion;
 
-GEDIT_PLUGIN_REGISTER_TYPE (GwpPlugin, gwp_plugin)
+GEDIT_PLUGIN_REGISTER_TYPE (GodcPlugin, godc_plugin)
 
 static void
-gwp_plugin_init (GwpPlugin *plugin)
+godc_plugin_init (GodcPlugin *plugin)
 {
-	plugin->priv = GWP_PLUGIN_GET_PRIVATE (plugin);
+	plugin->priv = GODC_PLUGIN_GET_PRIVATE (plugin);
 	gedit_debug_message (DEBUG_PLUGINS,
-			     "GwpPlugin initializing");
+			     "GodcPlugin initializing");
 }
 
 static void
-gwp_plugin_finalize (GObject *object)
+godc_plugin_finalize (GObject *object)
 {
 	gedit_debug_message (DEBUG_PLUGINS,
-			     "GwpPlugin finalizing");
-	G_OBJECT_CLASS (gwp_plugin_parent_class)->finalize (object);
+			     "GodcPlugin finalizing");
+	G_OBJECT_CLASS (godc_plugin_parent_class)->finalize (object);
 }
 
 static void
@@ -70,8 +66,8 @@ tab_added_cb (GeditWindow *geditwindow,
 {
 	GeditView *view = gedit_tab_get_view (tab);
 	GtkSourceCompletion *comp = gtk_source_view_get_completion (GTK_SOURCE_VIEW (view));
-	g_debug ("Adding Words provider");
-	GwpProviderWords *dw  = gwp_provider_words_new(GTK_SOURCE_VIEW (view));
+	g_debug ("Adding Open Docs provider");
+	GodcProviderOpenDocs *dw = godc_provider_open_docs_new(geditwindow);
 	gtk_source_completion_add_provider(comp,GTK_SOURCE_COMPLETION_PROVIDER(dw));
 	
 	g_object_unref(dw);
@@ -82,7 +78,7 @@ static void
 impl_activate (GeditPlugin *plugin,
 	       GeditWindow *window)
 {
-	GwpPlugin * dw_plugin = (GwpPlugin*)plugin;
+	GodcPlugin * dw_plugin = (GodcPlugin*)plugin;
 	dw_plugin->priv->gedit_window = window;
 	gedit_debug (DEBUG_PLUGINS);
 	
@@ -107,18 +103,18 @@ impl_update_ui (GeditPlugin *plugin,
 }
 
 static void
-gwp_plugin_class_init (GwpPluginClass *klass)
+godc_plugin_class_init (GodcPluginClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GeditPluginClass *plugin_class = GEDIT_PLUGIN_CLASS (klass);
 
-	object_class->finalize = gwp_plugin_finalize;
+	object_class->finalize = godc_plugin_finalize;
 
 	plugin_class->activate = impl_activate;
 	plugin_class->deactivate = impl_deactivate;
 	plugin_class->update_ui = impl_update_ui;
 
 	g_type_class_add_private (object_class, 
-				  sizeof (GwpPluginPrivate));
+				  sizeof (GodcPluginPrivate));
 }
 

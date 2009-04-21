@@ -1,5 +1,5 @@
 /*
- * gwp-plugin.h - Adds (auto)completion support to gedit
+ * godc-plugin.h - Adds (auto)completion support to gedit
  *
  * Copyright (C) 2007 - chuchiperriman
  *
@@ -18,47 +18,49 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef __GWP_PLUGIN_H__
-#define __GWP_PLUGIN_H__
+#ifndef __GODC_PLUGIN_H__
+#define __GODC_PLUGIN_H__
 
 #include <glib.h>
 #include <glib-object.h>
 #include <gedit/gedit-plugin.h>
+#include <gtksourceview/gtksourcecompletion.h>
+#include <gtksourceview/gtksourcecompletionprovider.h>
 
 G_BEGIN_DECLS
 
 /*
  * Type checking and casting macros
  */
-#define GWP_TYPE_PLUGIN		(gwp_plugin_get_type ())
-#define GWP_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GWP_TYPE_PLUGIN, GwpPlugin))
-#define GWP_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GWP_TYPE_PLUGIN, GwpPluginClass))
-#define IS_GWP_PLUGIN(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GWP_TYPE_PLUGIN))
-#define IS_GWP_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GWP_TYPE_PLUGIN))
-#define GWP_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GWP_TYPE_PLUGIN, GwpPluginClass))
+#define GODC_TYPE_PLUGIN		(godc_plugin_get_type ())
+#define GODC_PLUGIN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GODC_TYPE_PLUGIN, GodcPlugin))
+#define GODC_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GODC_TYPE_PLUGIN, GodcPluginClass))
+#define IS_GODC_PLUGIN(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GODC_TYPE_PLUGIN))
+#define IS_GODC_PLUGIN_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GODC_TYPE_PLUGIN))
+#define GODC_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GODC_TYPE_PLUGIN, GodcPluginClass))
 
 /* Private structure type */
-typedef struct _GwpPluginPrivate	GwpPluginPrivate;
+typedef struct _GodcPluginPrivate	GodcPluginPrivate;
 
 /*
  * Main object structure
  */
-typedef struct _GwpPlugin		GwpPlugin;
+typedef struct _GodcPlugin		GodcPlugin;
 
-struct _GwpPlugin
+struct _GodcPlugin
 {
 	GeditPlugin parent_instance;
 
 	/*< private >*/
-	GwpPluginPrivate *priv;
+	GodcPluginPrivate *priv;
 };
 
 /*
  * Class definition
  */
-typedef struct _GwpPluginClass	GwpPluginClass;
+typedef struct _GodcPluginClass	GodcPluginClass;
 
-struct _GwpPluginClass
+struct _GodcPluginClass
 {
 	GeditPluginClass parent_class;
 };
@@ -66,11 +68,11 @@ struct _GwpPluginClass
 /*
  * Public methods
  */
-GType	gwp_plugin_get_type	(void) G_GNUC_CONST;
+GType	godc_plugin_get_type	(void) G_GNUC_CONST;
 
 /* All the plugins must implement this function */
 G_MODULE_EXPORT GType register_gedit_plugin (GTypeModule *module);
 
 G_END_DECLS
 
-#endif /* __GWP_PLUGIN_H__ */
+#endif /* __GODC_PLUGIN_H__ */
