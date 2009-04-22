@@ -19,6 +19,8 @@ plugin_LTLIBRARIES = libgodc.la
 libgodc_la_SOURCES = \
 	godc-provider-open-docs.h	\
 	godc-provider-open-docs.c	\
+	godc-provider-recent.h	\
+	godc-provider-recent.c	\
 	godc-plugin.h			\
 	godc-plugin.c
 

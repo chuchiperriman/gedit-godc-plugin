@@ -38,6 +38,7 @@ G_DEFINE_TYPE_WITH_CODE (GodcProviderOpenDocs,
 			 G_IMPLEMENT_INTERFACE (GTK_TYPE_SOURCE_COMPLETION_PROVIDER,
 				 		godc_provider_open_docs_iface_init))
 
+/*TODO Share this functions with others providers*/
 static GdkPixbuf *
 get_icon_from_theme (const gchar *name)
 {
@@ -54,34 +55,10 @@ get_icon_from_theme (const gchar *name)
                                          NULL);
 }
 
-static gboolean
-view_key_release_cb 	(GtkSourceView 		*view,
-			 GdkEventKey 		*event,
-			 GodcProviderOpenDocs	*self)
-{
-	GtkSourceCompletion *completion;
-	guint key = 0;
-	GdkModifierType mod;
-	guint s;
-	gtk_accelerator_parse ("<Control>b", &key, &mod);
-	completion = gtk_source_view_get_completion (view);
-	
-	s = event->state & gtk_accelerator_get_default_mod_mask();
-	if (s == mod && gdk_keyval_to_lower(event->keyval) == key)
-	{
-		GList *providers = g_list_append (NULL, self);
-		gtk_source_completion_show (completion,
-					    providers,
-					    NULL);
-		g_list_free (providers);
-	}
-	
-	return FALSE;
-}
 static const gchar * 
 godc_provider_open_docs_get_name (GtkSourceCompletionProvider *self)
 {
-	return "GodcProviderOpenDocs";
+	return "Open Documents";
 }
 
 static GdkPixbuf * 
@@ -91,7 +68,7 @@ godc_provider_open_docs_get_icon (GtkSourceCompletionProvider *self)
 }
 
 static gboolean
-godc_provider_activate_proposal (GtkSourceCompletionProvider *provider,
+godc_provider_open_docs_activate_proposal (GtkSourceCompletionProvider *provider,
 				 GtkSourceCompletionProposal *proposal)
 {
 	GodcProviderOpenDocs *self = GODC_PROVIDER_OPEN_DOCS (provider);
@@ -193,7 +170,7 @@ godc_provider_open_docs_iface_init (GtkSourceCompletionProviderIface *iface)
 	iface->filter_proposal = godc_provider_open_docs_filter_proposal;
 	iface->get_interactive = godc_provider_open_docs_get_interactive;
 	iface->get_automatic = godc_provider_open_docs_get_automatic;
-	iface->activate_proposal = godc_provider_activate_proposal;
+	iface->activate_proposal = godc_provider_open_docs_activate_proposal;
 }
 
 static void 
@@ -206,14 +183,10 @@ godc_provider_open_docs_init (GodcProviderOpenDocs * self)
 }
 
 GodcProviderOpenDocs *
-godc_provider_open_docs_new	(GeditWindow	*window,
-				 GeditView	*view)
+godc_provider_open_docs_new	(GeditWindow	*window)
 {
 	GodcProviderOpenDocs *ret = g_object_new (GODC_TYPE_PROVIDER_OPEN_DOCS, NULL);
 	ret->priv->window = window;
-	
-	/*TODO Show completion when the user press <control>b*/
-	g_signal_connect(view, "key-release-event", G_CALLBACK(view_key_release_cb), ret);
 	
 	return ret;
 }

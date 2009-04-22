@@ -28,10 +28,11 @@
 #include <glib/gi18n-lib.h>
 #include <gedit/gedit-debug.h>
 #include "godc-provider-open-docs.h"
+#include "godc-provider-recent.h"
 
 #define GODC_PLUGIN_GET_PRIVATE(object)	(G_TYPE_INSTANCE_GET_PRIVATE ((object), GODC_TYPE_PLUGIN, GodcPluginPrivate))
 
-#define TEMP_TRIGGER_NAME "UserRequestTrigger"
+#define GODC_PROVIDERS_KEY "godc-providers"
 
 struct _GodcPluginPrivate
 {
@@ -42,6 +43,34 @@ struct _GodcPluginPrivate
 typedef struct _ViewAndCompletion ViewAndCompletion;
 
 GEDIT_PLUGIN_REGISTER_TYPE (GodcPlugin, godc_plugin)
+
+static gboolean
+view_key_release_cb 	(GtkSourceView 		*view,
+			 GdkEventKey 		*event,
+			 GodcProviderOpenDocs	*self)
+{
+	GtkSourceCompletion *completion;
+	guint key = 0;
+	GdkModifierType mod;
+	guint s;
+	gtk_accelerator_parse ("<Control>b", &key, &mod);
+	completion = gtk_source_view_get_completion (view);
+	
+	s = event->state & gtk_accelerator_get_default_mod_mask();
+	if (s == mod && gdk_keyval_to_lower(event->keyval) == key)
+	{
+		GList *providers = g_object_get_data (G_OBJECT (completion),
+						      GODC_PROVIDERS_KEY);
+		if (providers != NULL){
+			gtk_source_completion_show (completion,
+						    providers,
+						    NULL,
+						    NULL);
+		}
+	}
+	
+	return FALSE;
+}
 
 static void
 godc_plugin_init (GodcPlugin *plugin)
@@ -64,12 +93,27 @@ tab_added_cb (GeditWindow *geditwindow,
 	      GeditTab    *tab,
 	      gpointer     user_data)
 {
+	GList *providers = NULL;
 	GeditView *view = gedit_tab_get_view (tab);
 	GtkSourceCompletion *comp = gtk_source_view_get_completion (GTK_SOURCE_VIEW (view));
 	g_debug ("Adding Open Docs provider");
-	GodcProviderOpenDocs *dw = godc_provider_open_docs_new(geditwindow, view);
+	GodcProviderOpenDocs *dw = godc_provider_open_docs_new (geditwindow);
 	gtk_source_completion_add_provider(comp,GTK_SOURCE_COMPLETION_PROVIDER(dw));
 	g_object_unref(dw);
+	
+	GodcProviderRecent *pr = godc_provider_recent_new (geditwindow);
+	gtk_source_completion_add_provider(comp,GTK_SOURCE_COMPLETION_PROVIDER(pr));
+	g_object_unref(pr);
+	
+	providers = g_list_append (providers, dw);
+	providers = g_list_append (providers, pr);
+	g_object_set_data_full (G_OBJECT (comp),
+				GODC_PROVIDERS_KEY,
+				providers,
+				(GDestroyNotify) g_list_free);
+	
+	g_signal_connect(view, "key-release-event", G_CALLBACK(view_key_release_cb), user_data);
+	
 	g_debug ("provider registered");
 }
 

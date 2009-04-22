@@ -1,10 +1,10 @@
 #!/bin/sh
 # Crea un provider a partir del provider test
 namespace=GODC
-mays=PROVIDER_OPEN_DOCS
-type=GodcProviderOpenDocs
-min=godc_provider_open_docs
-file=godc-provider-open-docs
+mays=PROVIDER_RECENT
+type=GodcProviderRecent
+min=godc_provider_recent
+file=godc-provider-recent
 
 dest_dir=.
 
