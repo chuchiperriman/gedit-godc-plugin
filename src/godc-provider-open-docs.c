@@ -54,6 +54,30 @@ get_icon_from_theme (const gchar *name)
                                          NULL);
 }
 
+static gboolean
+view_key_release_cb 	(GtkSourceView 		*view,
+			 GdkEventKey 		*event,
+			 GodcProviderOpenDocs	*self)
+{
+	GtkSourceCompletion *completion;
+	guint key = 0;
+	GdkModifierType mod;
+	guint s;
+	gtk_accelerator_parse ("<Control>b", &key, &mod);
+	completion = gtk_source_view_get_completion (view);
+	
+	s = event->state & gtk_accelerator_get_default_mod_mask();
+	if (s == mod && gdk_keyval_to_lower(event->keyval) == key)
+	{
+		GList *providers = g_list_append (NULL, self);
+		gtk_source_completion_show (completion,
+					    providers,
+					    NULL);
+		g_list_free (providers);
+	}
+	
+	return FALSE;
+}
 static const gchar * 
 godc_provider_open_docs_get_name (GtkSourceCompletionProvider *self)
 {
@@ -128,6 +152,12 @@ godc_provider_open_docs_get_interactive (GtkSourceCompletionProvider *provider)
 	return FALSE;
 }
 
+static gboolean
+godc_provider_open_docs_get_automatic (GtkSourceCompletionProvider *provider)
+{
+	return FALSE;
+}
+
 static void 
 godc_provider_open_docs_finalize (GObject *object)
 {
@@ -162,6 +192,7 @@ godc_provider_open_docs_iface_init (GtkSourceCompletionProviderIface *iface)
 	iface->get_proposals = godc_provider_open_docs_get_proposals;
 	iface->filter_proposal = godc_provider_open_docs_filter_proposal;
 	iface->get_interactive = godc_provider_open_docs_get_interactive;
+	iface->get_automatic = godc_provider_open_docs_get_automatic;
 	iface->activate_proposal = godc_provider_activate_proposal;
 }
 
@@ -182,6 +213,7 @@ godc_provider_open_docs_new	(GeditWindow	*window,
 	ret->priv->window = window;
 	
 	/*TODO Show completion when the user press <control>b*/
+	g_signal_connect(view, "key-release-event", G_CALLBACK(view_key_release_cb), ret);
 	
 	return ret;
 }
