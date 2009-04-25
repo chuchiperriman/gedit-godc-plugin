@@ -68,8 +68,9 @@ godc_provider_open_docs_get_icon (GtkSourceCompletionProvider *self)
 }
 
 static gboolean
-godc_provider_open_docs_activate_proposal (GtkSourceCompletionProvider *provider,
-				 GtkSourceCompletionProposal *proposal)
+godc_provider_open_docs_activate_proposal (GtkSourceCompletionProvider	*provider,
+					   GtkSourceCompletionProposal	*proposal,
+					   GtkTextIter			*iter)
 {
 	GodcProviderOpenDocs *self = GODC_PROVIDER_OPEN_DOCS (provider);
 	GeditDocument *doc = g_object_get_data (G_OBJECT (proposal), "document");
@@ -79,7 +80,8 @@ godc_provider_open_docs_activate_proposal (GtkSourceCompletionProvider *provider
 }
 
 static GList *
-godc_provider_open_docs_get_proposals (GtkSourceCompletionProvider *base)
+godc_provider_open_docs_get_proposals (GtkSourceCompletionProvider	*base,
+				       GtkTextIter			*iter)
 {
 	GList *item_list = NULL;
 	GList *wins,*temp;
@@ -113,9 +115,10 @@ godc_provider_open_docs_get_proposals (GtkSourceCompletionProvider *base)
 }
 
 static gboolean
-godc_provider_open_docs_filter_proposal (GtkSourceCompletionProvider *provider,
-                                   GtkSourceCompletionProposal *proposal,
-                                   const gchar                 *criteria)
+godc_provider_open_docs_filter_proposal (GtkSourceCompletionProvider	*provider,
+					 GtkSourceCompletionProposal	*proposal,
+					 GtkTextIter			*iter,
+					 const gchar			*criteria)
 {
 	const gchar *label;
 	

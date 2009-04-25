@@ -29,6 +29,7 @@
 #include <gedit/gedit-debug.h>
 #include "godc-provider-open-docs.h"
 #include "godc-provider-recent.h"
+#include "godc-provider-file-browser.h"
 
 #define GODC_PLUGIN_GET_PRIVATE(object)	(G_TYPE_INSTANCE_GET_PRIVATE ((object), GODC_TYPE_PLUGIN, GodcPluginPrivate))
 
@@ -96,17 +97,23 @@ tab_added_cb (GeditWindow *geditwindow,
 	GList *providers = NULL;
 	GeditView *view = gedit_tab_get_view (tab);
 	GtkSourceCompletion *comp = gtk_source_view_get_completion (GTK_SOURCE_VIEW (view));
-	g_debug ("Adding Open Docs provider");
+	
 	GodcProviderOpenDocs *dw = godc_provider_open_docs_new (geditwindow);
-	gtk_source_completion_add_provider(comp,GTK_SOURCE_COMPLETION_PROVIDER(dw));
+	gtk_source_completion_add_provider(comp,GTK_SOURCE_COMPLETION_PROVIDER(dw), NULL);
 	g_object_unref(dw);
 	
 	GodcProviderRecent *pr = godc_provider_recent_new (geditwindow);
-	gtk_source_completion_add_provider(comp,GTK_SOURCE_COMPLETION_PROVIDER(pr));
+	gtk_source_completion_add_provider(comp,GTK_SOURCE_COMPLETION_PROVIDER(pr), NULL);
 	g_object_unref(pr);
+	
+	GodcProviderFileBrowser *pfb = godc_provider_file_browser_new (geditwindow);
+	gtk_source_completion_add_provider(comp,GTK_SOURCE_COMPLETION_PROVIDER(pfb), NULL);
+	g_object_unref(pfb);
 	
 	providers = g_list_append (providers, dw);
 	providers = g_list_append (providers, pr);
+	providers = g_list_append (providers, pfb);
+	
 	g_object_set_data_full (G_OBJECT (comp),
 				GODC_PROVIDERS_KEY,
 				providers,
@@ -142,7 +149,6 @@ static void
 impl_update_ui (GeditPlugin *plugin,
 		GeditWindow *window)
 {
-
 }
 
 static void
