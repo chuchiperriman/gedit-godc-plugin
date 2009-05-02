@@ -100,6 +100,7 @@ godc_provider_open_docs_get_proposals (GtkSourceCompletionProvider	*base,
 			name = gedit_document_get_short_name_for_display (doc);
 			info = gedit_document_get_uri_for_display (doc);
 			item = GTK_SOURCE_COMPLETION_PROPOSAL (gtk_source_completion_item_new((gchar*)name,
+							       NULL,
 							       self->priv->proposal_icon,
 							       info));
 			g_object_set_data (G_OBJECT (item), "document", doc);

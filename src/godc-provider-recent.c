@@ -74,7 +74,8 @@ godc_provider_recent_get_icon (GtkSourceCompletionProvider *self)
 
 
 static GList *
-godc_provider_recent_get_proposals (GtkSourceCompletionProvider *base)
+godc_provider_recent_get_proposals (GtkSourceCompletionProvider *base,
+				    GtkTextIter *iter)
 {
 	GodcProviderRecent *self = GODC_PROVIDER_RECENT (base);
 	GtkSourceCompletionProposal *item;
@@ -107,6 +108,7 @@ godc_provider_recent_get_proposals (GtkSourceCompletionProvider *base)
 		const gchar *uri = gtk_recent_info_get_uri (info);
 
 		item = GTK_SOURCE_COMPLETION_PROPOSAL (gtk_source_completion_item_new((gchar*)name,
+						       NULL,
 						       self->priv->proposal_icon,
 						       (gchar*)display_info));
 		g_object_set_data_full (G_OBJECT (item), 
@@ -128,7 +130,8 @@ godc_provider_recent_get_proposals (GtkSourceCompletionProvider *base)
 
 static gboolean
 godc_provider_recent_activate_proposal (GtkSourceCompletionProvider *provider,
-				 GtkSourceCompletionProposal *proposal)
+				 GtkSourceCompletionProposal *proposal,
+				 GtkTextIter *iter)
 {
 	GodcProviderRecent *self = GODC_PROVIDER_RECENT (provider);
 	gchar *uri = g_object_get_data (G_OBJECT (proposal), "uri");
@@ -143,6 +146,7 @@ godc_provider_recent_activate_proposal (GtkSourceCompletionProvider *provider,
 static gboolean
 godc_provider_recent_filter_proposal (GtkSourceCompletionProvider *provider,
                                    GtkSourceCompletionProposal *proposal,
+                                   GtkTextIter *iter,
                                    const gchar                 *criteria)
 {
 	const gchar *label;

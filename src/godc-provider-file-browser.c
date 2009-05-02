@@ -123,6 +123,7 @@ godc_provider_file_browser_get_proposals (GtkSourceCompletionProvider *base,
 			file_uri = g_file_get_uri (file);
 
 			item = GTK_SOURCE_COMPLETION_PROPOSAL (gtk_source_completion_item_new((gchar*)filename,
+							       NULL,
 							       self->priv->proposal_icon,
 							       file_uri));
 			g_object_set_data_full (G_OBJECT (item), 
